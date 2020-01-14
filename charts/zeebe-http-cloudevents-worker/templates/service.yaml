@@ -9,4 +9,4 @@ spec:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         env:
         - name: K_SINK
-          value: "http://cloudevents-java.default.example.com"
+          value: "cloudevents-java.default.example.com"

@@ -79,7 +79,7 @@ func (recv *Receiver) ReceiveAndSend(ctx context.Context, event cloudevents.Even
 	r.SetData(resp)
 
 
-	ctx = cloudevents.ContextWithTarget(ctx, "knative-external-proxy.gloo-system.svc.cluster.local")
+	ctx = cloudevents.ContextWithTarget(ctx, "http://knative-external-proxy.gloo-system.svc.cluster.local")
 	_, _, err := recv.client.Send(ctx, r)
 	return err
 }
