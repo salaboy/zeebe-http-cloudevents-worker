@@ -8,6 +8,6 @@ spec:
       containers:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         # Uncomment this to send events somewhere.
-        # env:
-        # - name: K_SINK
-        #   value: http://default-broker.default.svc.cluster.local
+         env:
+         - name: K_SINK
+           value: http://cloudevents-java.default.example.com

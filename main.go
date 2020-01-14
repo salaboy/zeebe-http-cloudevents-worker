@@ -20,6 +20,7 @@ type Receiver struct {
 
 func main() {
 	client, err := cloudevents.NewDefaultClient()
+
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -70,14 +71,15 @@ func (recv *Receiver) ReceiveAndSend(ctx context.Context, event cloudevents.Even
 
 	resp := handle(req)
 	log.Printf("Sending event: %q", resp.Message)
-
+	cloudevents.WitHHeader("Host", recv.Target)
 	r := cloudevents.NewEvent(cloudevents.VersionV1)
 	r.SetType("dev.knative.docs.sample")
 	r.SetSource("https://github.com/knative/docs/docs/serving/samples/cloudevents/cloudevents-go")
 	r.SetDataContentType("application/json")
 	r.SetData(resp)
 
-	ctx = cloudevents.ContextWithTarget(ctx, recv.Target)
+
+	ctx = cloudevents.ContextWithTarget(ctx, "knative-external-proxy.gloo-system.svc.cluster.local")
 	_, _, err := recv.client.Send(ctx, r)
 	return err
 }
@@ -98,6 +100,7 @@ func (recv *Receiver) ReceiveAndReply(ctx context.Context, event cloudevents.Eve
 	r.SetSource("https://github.com/knative/docs/docs/serving/samples/cloudevents/cloudevents-go")
 	r.SetDataContentType("application/json")
 	r.SetData(resp)
+
 
 	eventResp.RespondWith(http.StatusOK, &r)
 
