@@ -8,5 +8,7 @@ spec:
       containers:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         env:
-        - name: K_SINK
-          value: "cloudevents-java.default.example.com"
+        - name: FNHOST
+          value: "cloudevents-spring-boot.default.example.com"
+        - name: FNHOST
+          value: "http://knative-external-proxy.gloo-system.svc.cluster.local"

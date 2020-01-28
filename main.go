@@ -15,7 +15,8 @@ type Receiver struct {
 
 	// If the K_SINK environment variable is set, then events are sent there,
 	// otherwise we simply reply to the inbound request.
-	Target string `envconfig:"K_SINK"`
+	FnHost string `envconfig:"FNHOST"`
+	Host string `envconfig:"HOST"`
 }
 
 func main() {
@@ -34,7 +35,7 @@ func main() {
 	// we will either reply with our response or send it on to
 	// an event sink.
 	var receiver interface{} // the SDK reflects on the signature.
-	if r.Target == "" {
+	if r.FnHost == "" {
 		receiver = r.ReceiveAndReply
 	} else {
 		receiver = r.ReceiveAndSend
@@ -71,7 +72,7 @@ func (recv *Receiver) ReceiveAndSend(ctx context.Context, event cloudevents.Even
 
 	resp := handle(req)
 	log.Printf("Sending event: %q", resp.Message)
-	cloudevents.WitHHeader("Host", recv.Target)
+	cloudevents.WitHHeader("Host", recv.FnHost)
 	r := cloudevents.NewEvent(cloudevents.VersionV1)
 	r.SetType("dev.knative.docs.sample")
 	r.SetSource("https://github.com/knative/docs/docs/serving/samples/cloudevents/cloudevents-go")
@@ -79,7 +80,7 @@ func (recv *Receiver) ReceiveAndSend(ctx context.Context, event cloudevents.Even
 	r.SetData(resp)
 
 
-	ctx = cloudevents.ContextWithTarget(ctx, "knative-external-proxy.gloo-system.svc.cluster.local")
+	ctx = cloudevents.ContextWithTarget(ctx, recv.Host)
 	_, _, err := recv.client.Send(ctx, r)
 	return err
 }
